@@ -1,4 +1,5 @@
 #include "vibrato-cloud-api.h"
+#include <QApplication>
 
 VibratoCloudAPI::VibratoCloudAPI()
 {
@@ -31,7 +32,9 @@ bool VibratoCloudAPI::login(QString username, QString password)
     // HTTP Basic Authententication needs to be encoded using base64
     QString base64 = ba.toBase64();
 
-
+    QNetworkRequest req(QUrl("http://localhost:8000/users/login/"));
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+                  "application/json");
 }
 
 QString VibratoCloudAPI::token() const
@@ -141,6 +144,28 @@ void VibratoCloudAPI::init()
 QUrl VibratoCloudAPI::itemEndpoint(QString type, QString sync_hash)
 {
     return QUrl(QString("/%1/%2/").arg(type, sync_hash));
+}
+
+QNetworkReply *VibratoCloudAPI::request(QString apiEndpoint, QNetworkRequest request, QString httpMethod, QString data)
+{
+    request.setUrl(buildPath(apiEndpoint));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,
+                  "application/json");
+
+    QNetworkReply *r;
+
+    if (httpMethod.toUpper() == "GET")
+     m_networkAccessManager->get(request);
+    else if (httpMethod.toUpper() == "POST")
+     m_networkAccessManager->post(request, data.toUtf8());
+
+
+    // The programatic equivalent to twiddling your
+    // thumbs waiting for the process to complete.
+    while ( r->isRunning() ) {
+        qApp->processEvents();
+    }
+    return r;
 }
 
 /*

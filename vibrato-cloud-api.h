@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QUrl>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 class VibratoCloudAPI : QObject
 {
@@ -40,6 +41,11 @@ public:
      */
     QString token() const;
     bool setToken(QString token);
+
+    /*
+     * Easy way to get
+     */
+    QUrl buildPath(QString path);
 
     /*
      * Using the API token, you may fetch JSON objects.
@@ -105,9 +111,10 @@ private:
     QUrl itemEndpoint(QString type, QString sync_hash);
 
     // Generic HTTP request functions
-    QJsonArray  genericList(QUrl apiEndpoint);
-    QJsonObject genericRetrieve(QUrl apiEndpoint);
-    QJsonObject genericUpdate(QUrl apiEndpoint, QJsonObject data, bool partial=true);
-    QJsonObject genericCreate(QUrl apiEndpoint, QJsonObject data);
-    bool        genericDelete(QUrl apiEndpoint);
+    QNetworkReply *request(QString apiEndpoint, QNetworkRequest request=QNetworkRequest(), QString httpMethod="GET", QString data="");
+    QJsonArray    genericList(QString apiEndpoint);
+    QJsonObject   genericRetrieve(QUrl apiEndpoint);
+    QJsonObject   genericUpdate(QString apiEndpoint, QJsonObject data, bool partial=true);
+    QJsonObject   genericCreate(QString apiEndpoint, QJsonObject data);
+    bool          genericDelete(QString apiEndpoint);
 };

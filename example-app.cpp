@@ -29,6 +29,12 @@ int main(int argc, char **argv)
     qDebug() << resp;
     qDebug() << r->error();
 
+    QUrl myapi = QUrl("http://google.io/api");
+    QUrl page = myapi;
+    page.setPath("users/login");
+    qDebug() << myapi.toString();
+    qDebug() << page.toString();
+
     app.exit();
     return 0;
 }
