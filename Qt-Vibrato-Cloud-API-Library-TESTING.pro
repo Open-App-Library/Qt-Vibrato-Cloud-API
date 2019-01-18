@@ -1,6 +1,8 @@
 QT += core gui
 
-CONFIG += c++11 console
+TEMPLATE += app
+
+CONFIG += c++11
 CONFIG -= app_bundle
 
 # The following define makes your compiler emit warnings if you use
