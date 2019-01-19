@@ -10,30 +10,16 @@ int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
 
-    QNetworkAccessManager *internet = new QNetworkAccessManager();
 
-    QNetworkRequest req(QUrl("http://localhost:8000/users/lofgin/"));
-    req.setHeader(QNetworkRequest::ContentTypeHeader,
-                  "application/json");
+    VibratoCloudAPI api;
 
-    QNetworkReply *r = internet->get(req);
+    VibratoCloudAPI::ResponseCode err = api.setSyncServerUrl(QUrl("http://localhost:8000"));
+    qDebug() << "Sync Server Status:" << err;
 
-    // The programatic equivalent to twiddling your thumbs waiting for
-    // the process to complete.
-    while ( r->isRunning() ) {
-        app.processEvents();
-    }
+    qDebug("Logging in");
+    api.login("test-user", "vibratonotes");
 
-    QString resp = r->readAll();
 
-    qDebug() << resp;
-    qDebug() << r->error();
-
-    QUrl myapi = QUrl("http://google.io/api");
-    QUrl page = myapi;
-    page.setPath("users/login");
-    qDebug() << myapi.toString();
-    qDebug() << page.toString();
 
     app.exit();
     return 0;
