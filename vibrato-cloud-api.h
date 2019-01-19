@@ -153,7 +153,13 @@ private:
     QJsonObject   genericAuthenticatedCreate(QUrl url, QJsonObject data, QNetworkRequest request=QNetworkRequest());
     bool          genericAuthenticatedDelete(QUrl url, QNetworkRequest request=QNetworkRequest());
 
-
+    /*
+     * Helpful little functions.
+     * networkReplyIsJson simply checks the content type of a networki reply to ensure it is 'application/json'.
+     *
+     * validateJsonResponse processes a reply and returns a QJsonObject of either the returned object or an error
+     * as a QJsonObject.
+     */
     bool networkReplyIsJson(const QNetworkReply *reply);
     QJsonObject validateJsonResponse(QNetworkReply *reply, QString identifier="Request");
 };

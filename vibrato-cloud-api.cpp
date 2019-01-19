@@ -162,62 +162,62 @@ QJsonObject VibratoCloudAPI::fetchTags()
 
 QJsonObject VibratoCloudAPI::fetchNote(QString sync_hash)
 {
-    return genericGet(buildItemUrl("notes", sync_hash));
+    return genericAuthenticatedGet(buildItemUrl("notes", sync_hash));
 }
 
 QJsonObject VibratoCloudAPI::fetchNotebook(QString sync_hash)
 {
-    return genericGet(buildItemUrl("notebooks", sync_hash));
+    return genericAuthenticatedGet(buildItemUrl("notebooks", sync_hash));
 }
 
 QJsonObject VibratoCloudAPI::fetchTag(QString sync_hash)
 {
-    return genericGet(buildItemUrl("tags", sync_hash));
+    return genericAuthenticatedGet(buildItemUrl("tags", sync_hash));
 }
 
 QJsonObject VibratoCloudAPI::updateNote(QString sync_hash, QJsonObject data, bool partial)
 {
-    return genericUpdate(buildItemUrl("notes", sync_hash), data, partial);
+    return genericAuthenticatedUpdate(buildItemUrl("notes", sync_hash), data, partial);
 }
 
 QJsonObject VibratoCloudAPI::updateNotebook(QString sync_hash, QJsonObject data, bool partial)
 {
-    return genericUpdate(buildItemUrl("notebooks", sync_hash), data, partial);
+    return genericAuthenticatedUpdate(buildItemUrl("notebooks", sync_hash), data, partial);
 }
 
 QJsonObject VibratoCloudAPI::updateTag(QString sync_hash, QJsonObject data, bool partial)
 {
-    return genericUpdate(buildItemUrl("tags", sync_hash), data, partial);
+    return genericAuthenticatedUpdate(buildItemUrl("tags", sync_hash), data, partial);
 }
 
 QJsonObject VibratoCloudAPI::createNote(QJsonObject data)
 {
-    return genericCreate(buildUrl("/notes/"), data);
+    return genericAuthenticatedCreate(buildUrl("/notes/"), data);
 }
 
 QJsonObject VibratoCloudAPI::createNotebook(QJsonObject data)
 {
-    return genericCreate(buildUrl("/notebooks/"), data);
+    return genericAuthenticatedCreate(buildUrl("/notebooks/"), data);
 }
 
 QJsonObject VibratoCloudAPI::createTag(QJsonObject data)
 {
-    return genericCreate(buildUrl("/tags/"), data);
+    return genericAuthenticatedCreate(buildUrl("/tags/"), data);
 }
 
 bool VibratoCloudAPI::deleteNote(QString sync_hash)
 {
-    return genericDelete(buildItemUrl("notes", sync_hash));
+    return genericAuthenticatedDelete(buildItemUrl("notes", sync_hash));
 }
 
 bool VibratoCloudAPI::deleteNotebook(QString sync_hash)
 {
-    return genericDelete(buildItemUrl("notebooks", sync_hash));
+    return genericAuthenticatedDelete(buildItemUrl("notebooks", sync_hash));
 }
 
 bool VibratoCloudAPI::deleteTag(QString sync_hash)
 {
-    return genericDelete(buildItemUrl("tags", sync_hash));
+    return genericAuthenticatedDelete(buildItemUrl("tags", sync_hash));
 }
 
 QString VibratoCloudAPI::encryptString(QString string)

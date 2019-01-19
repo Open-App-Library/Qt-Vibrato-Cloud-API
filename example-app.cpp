@@ -19,8 +19,9 @@ int main(int argc, char **argv)
     qDebug("Logging in");
     api.login("test-user", "vibratonotes");
 
-    qDebug() << api.fetchTags();
-
+    QJsonObject obj;
+    obj.insert("title", "Hello C++");
+    qDebug() << api.createNote(obj);
 
     app.exit();
     return 0;
