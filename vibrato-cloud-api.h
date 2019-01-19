@@ -123,8 +123,14 @@ public:
      * The encryption key is generated using a combination of the user's
      * email and password.
      */
-    QString encryptString(QString string);
-    QString decryptString(QString string);
+    QString     encryptString(QString string);
+    QString     decryptString(QString string);
+    QJsonObject encryptNote(QJsonObject note);
+    QJsonObject encryptNotebook(QJsonObject notebook);
+    QJsonObject encryptTag(QJsonObject tag);
+    QJsonObject decryptNote(QJsonObject note);
+    QJsonObject decryptNotebook(QJsonObject notebook);
+    QJsonObject decryptTag(QJsonObject tag);
 
 signals:
     void tokenChanged(QString apiToken);
