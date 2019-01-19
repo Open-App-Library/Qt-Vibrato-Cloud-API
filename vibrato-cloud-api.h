@@ -19,13 +19,13 @@ public:
     /*
      * Initialization.
      * You may either not provide credentials and call the
-     * login(username, password) function later. You may provide an API token.
-     * Or you may provide your username and password right away. (Which simply
-     * calls the login(username, password) function.
+     * login(email, password) function later. You may provide an API token.
+     * Or you may provide your email and password right away. (Which simply
+     * calls the login(email, password) function.
      */
     VibratoCloudAPI();
     VibratoCloudAPI(QString token);
-    VibratoCloudAPI(QString username, QString password);
+    VibratoCloudAPI(QString email, QString password);
     ~VibratoCloudAPI();
 
     // Typedefs
@@ -34,16 +34,17 @@ public:
         bool success;
         QString errorMessage;
         ResponseCode responseCode;
+        QString privateKey;
     } AuthenticationStatus;
 
     /*
-     * Authenticates your username and password over basic authentication.
+     * Authenticates your email and password over basic authentication.
      * Logging in will return a new API token that expires in 30 days.
      * You may use the tokenChanged signal to retrieve the token that
      * is pulled down.
      * Returns true if succesfully retrieves token.
      */
-    AuthenticationStatus login(QString username, QString password);
+    AuthenticationStatus login(QString email, QString password);
 
     /*
      * Getter and setter for the sync server URL.

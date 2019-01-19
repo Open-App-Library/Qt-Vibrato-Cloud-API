@@ -14,10 +14,10 @@ VibratoCloudAPI::VibratoCloudAPI(QString token)
     setToken(token);
 }
 
-VibratoCloudAPI::VibratoCloudAPI(QString username, QString password)
+VibratoCloudAPI::VibratoCloudAPI(QString email, QString password)
 {
     init();
-    login(username, password);
+    login(email, password);
 }
 
 VibratoCloudAPI::~VibratoCloudAPI()
@@ -25,11 +25,11 @@ VibratoCloudAPI::~VibratoCloudAPI()
     delete m_networkAccessManager;
 }
 
-VibratoCloudAPI::AuthenticationStatus VibratoCloudAPI::login(QString username, QString password)
+VibratoCloudAPI::AuthenticationStatus VibratoCloudAPI::login(QString email, QString password)
 {
     AuthenticationStatus returnStatus;
 
-    QString authString = QString("%1:%2").arg(username, password);
+    QString authString = QString("%1:%2").arg(email, password);
     QByteArray ba;
     ba.append(authString);
 
@@ -83,6 +83,15 @@ VibratoCloudAPI::AuthenticationStatus VibratoCloudAPI::login(QString username, Q
     returnStatus.success = success;
     returnStatus.errorMessage = errorMessage;
     returnStatus.responseCode = status;
+
+    /*
+     * Before returning, generate a private key based on the user's email
+     * and password.
+     */
+    if (success) {
+        returnStatus.privateKey = "THIS NEEDS TO BE IMPLEMENTED!";
+    }
+
     return returnStatus;
 }
 
@@ -123,6 +132,17 @@ bool VibratoCloudAPI::setToken(QString token)
     // TODO: Add validation code and only set m_token if valid.
     m_token = token;
     emit tokenChanged(m_token);
+
+    // Do a quick test on an API endpoint to see if it works.
+    QNetworkReply *test = basicRequest(buildUrl("/users/me/"), createAuthenticatedNetworkRequest());
+
+    // Return true if success.
+    if ( test->error() == QNetworkReply::NoError )
+        return true;
+
+    // Return false if error.
+    qWarning() << "Newly set API key is not valid :(" << test->errorString();
+    return false;
 }
 
 QUrl VibratoCloudAPI::buildUrl(QString path)
