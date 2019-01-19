@@ -90,9 +90,9 @@ public:
      * than the "id". Think of sync_hashes as the unique
      * fingerprint of your note, notebook or tag.
      */
-    QJsonArray fetchNotes();
-    QJsonArray fetchNotebooks();
-    QJsonArray fetchTags();
+    QJsonObject fetchNotes();
+    QJsonObject fetchNotebooks();
+    QJsonObject fetchTags();
 
     QJsonObject fetchNote(QString sync_hash);
     QJsonObject fetchNotebook(QString sync_hash);
@@ -141,10 +141,18 @@ private:
     QNetworkAccessManager *m_networkAccessManager;
 
     // Generic HTTP request functions
-    QNetworkReply *request(QUrl url, QNetworkRequest request=QNetworkRequest(), QString httpMethod="GET", QString data="");
-    QJsonArray    genericList(QUrl url);
-    QJsonObject   genericRetrieve(QUrl url);
-    QJsonObject   genericUpdate(QUrl url, QJsonObject data, bool partial=true);
-    QJsonObject   genericCreate(QUrl url, QJsonObject data);
-    bool          genericDelete(QUrl url);
+    QNetworkReply *basicRequest(QUrl url, QNetworkRequest request=QNetworkRequest(), QString httpMethod="GET", QString data="");
+    QJsonObject   genericGet(QUrl url, QNetworkRequest request=QNetworkRequest());
+    QJsonObject   genericUpdate(QUrl url, QJsonObject data, bool partial=true, QNetworkRequest request=QNetworkRequest());
+    QJsonObject   genericCreate(QUrl url, QJsonObject data, QNetworkRequest request=QNetworkRequest());
+    bool          genericDelete(QUrl url, QNetworkRequest request=QNetworkRequest());
+
+    QNetworkRequest createAuthenticatedNetworkRequest(QNetworkRequest request=QNetworkRequest());
+    QJsonObject   genericAuthenticatedGet(QUrl url, QNetworkRequest request=QNetworkRequest());
+    QJsonObject   genericAuthenticatedUpdate(QUrl url, QJsonObject data, bool partial=true, QNetworkRequest request=QNetworkRequest());
+    QJsonObject   genericAuthenticatedCreate(QUrl url, QJsonObject data, QNetworkRequest request=QNetworkRequest());
+    bool          genericAuthenticatedDelete(QUrl url, QNetworkRequest request=QNetworkRequest());
+
+
+    bool networkReplyIsJson(const QNetworkReply *reply);
 };
