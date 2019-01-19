@@ -155,4 +155,5 @@ private:
 
 
     bool networkReplyIsJson(const QNetworkReply *reply);
+    QJsonObject validateJsonResponse(QNetworkReply *reply, QString identifier="Request");
 };

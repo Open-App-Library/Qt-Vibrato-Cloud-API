@@ -147,17 +147,17 @@ QUrl VibratoCloudAPI::buildItemUrl(QString type, QString sync_hash)
 
 QJsonObject VibratoCloudAPI::fetchNotes()
 {
-    return genericGet( buildUrl("/notes/") );
+    return genericAuthenticatedGet( buildUrl("/notes/") );
 }
 
 QJsonObject VibratoCloudAPI::fetchNotebooks()
 {
-    return genericGet( buildUrl("/notebooks/") );
+    return genericAuthenticatedGet( buildUrl("/notebooks/") );
 }
 
 QJsonObject VibratoCloudAPI::fetchTags()
 {
-    return genericGet( buildUrl("/tags/") );
+    return genericAuthenticatedGet( buildUrl("/tags/") );
 }
 
 QJsonObject VibratoCloudAPI::fetchNote(QString sync_hash)
@@ -278,37 +278,34 @@ QNetworkReply *VibratoCloudAPI::basicRequest(QUrl url, QNetworkRequest request, 
 QJsonObject VibratoCloudAPI::genericGet(QUrl url, QNetworkRequest request)
 {
     QNetworkReply *r  = basicRequest(url, request);
-
-    if ( networkReplyIsJson(r) ) {
-        QJsonDocument doc = QJsonDocument::fromJson( r->readAll() );
-        if (doc.isObject()) {
-            return doc.object();
-        } else {
-            qWarning() << "genericList function gave back a strange result" << doc.toJson();
-            QJsonObject obj;
-            obj.insert("detail", "Invalid list returned from server.");
-            return obj;
-        }
-    } else {
-        QJsonObject obj;
-        obj.insert("detail", "Invalid response from server.");
-        return obj;
-    }
+    return validateJsonResponse(r, "genericGet function");
 }
 
 QJsonObject VibratoCloudAPI::genericUpdate(QUrl url, QJsonObject data, bool partial, QNetworkRequest request)
 {
-
+    QString method = partial ? VIBRATO_HTTP_PATCH : VIBRATO_HTTP_PUT;
+    QString json = QJsonDocument(data).toJson();
+    QNetworkReply *r  = basicRequest(url, request, method, json);
+    return validateJsonResponse(r, "genericUpdate function");
 }
 
 QJsonObject VibratoCloudAPI::genericCreate(QUrl url, QJsonObject data, QNetworkRequest request)
 {
-
+    QString json = QJsonDocument(data).toJson();
+    QNetworkReply *r  = basicRequest(url, request, VIBRATO_HTTP_POST, json);
+    return validateJsonResponse(r, "genericCreate function");
 }
 
 bool VibratoCloudAPI::genericDelete(QUrl url, QNetworkRequest request)
 {
+    QNetworkReply *r  = basicRequest(url, request, VIBRATO_HTTP_DELETE);
+    int httpCode = r->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
+    bool success = httpCode == 204;
 
+    if (!success)
+        qWarning() << QJsonDocument(validateJsonResponse(r, "genericDelete function")).toJson();
+
+    return success;
 }
 
 QNetworkRequest VibratoCloudAPI::createAuthenticatedNetworkRequest(QNetworkRequest request)
@@ -343,5 +340,34 @@ bool VibratoCloudAPI::networkReplyIsJson(const QNetworkReply *reply)
     return
         reply->header(QNetworkRequest::ContentTypeHeader).toString()
         ==
-        "application/json";
+            "application/json";
+}
+
+QJsonObject VibratoCloudAPI::validateJsonResponse(QNetworkReply *reply, QString identifier)
+{
+    QString message = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+    int httpCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        QJsonObject obj;
+        obj.insert("detail", message);
+        obj.insert("code", httpCode);
+        return obj;
+    }
+
+    if ( networkReplyIsJson(reply) ) {
+        QJsonDocument doc = QJsonDocument::fromJson( reply->readAll() );
+        if (doc.isObject()) {
+            return doc.object();
+        } else {
+            qWarning() << identifier << "function gave back a strange result" << doc.toJson();
+            QJsonObject obj;
+            obj.insert("detail", "Strange JSON object returned from server.");
+            return obj;
+        }
+    } else {
+        QJsonObject obj;
+        obj.insert("detail", "Invalid response from server.");
+        return obj;
+    }
 }
